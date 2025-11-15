@@ -24,6 +24,10 @@ export class UIManager {
             rotationYControl: document.getElementById('rotationYControl'),
             rotationYSlider: document.getElementById('rotationYSlider'),
             rotationYValueSpan: document.getElementById('rotationYValue'),
+            tinyPlanetControl: document.getElementById('tinyPlanetControl'),
+            tinyPlanetToggle: document.getElementById('tinyPlanetToggle'),
+            directViewControl: document.getElementById('directViewControl'),
+            directViewToggle: document.getElementById('directViewToggle'),
             video: document.getElementById('video')
         };
 
@@ -51,6 +55,12 @@ export class UIManager {
 
         // Rotation Y slider
         this.elements.rotationYSlider.addEventListener('input', (e) => this.handleRotationYChange(e));
+
+        // Tiny Planet toggle
+        this.elements.tinyPlanetToggle.addEventListener('change', (e) => this.handleTinyPlanetToggle(e));
+
+        // Direct View toggle
+        this.elements.directViewToggle.addEventListener('change', (e) => this.handleDirectViewToggle(e));
     }
 
     handleStart() {
@@ -73,6 +83,8 @@ export class UIManager {
         this.elements.zoomControl.style.display = 'flex';
         this.elements.rotationXControl.style.display = 'flex';
         this.elements.rotationYControl.style.display = 'flex';
+        this.elements.tinyPlanetControl.style.display = 'flex';
+        this.elements.directViewControl.style.display = 'flex';
     }
 
     handleImageUpload(event) {
@@ -154,6 +166,16 @@ export class UIManager {
         // Convert radians to degrees for display
         const degrees = (rotationValue * 180 / Math.PI).toFixed(2);
         this.elements.rotationYValueSpan.textContent = degrees;
+    }
+
+    handleTinyPlanetToggle(event) {
+        const enabled = event.target.checked;
+        this.sceneManager.setTinyPlanet(enabled);
+    }
+
+    handleDirectViewToggle(event) {
+        const enabled = event.target.checked;
+        this.sceneManager.setDirectView(enabled);
     }
 
     cleanup() {

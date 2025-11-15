@@ -15,6 +15,8 @@ export class SceneManager {
         this.imageCanvas = null;
         this.animationId = null;
         this.shaderMaterial = null;
+        this.backgroundSphere = null;
+        this.backgroundMaterial = null;
     }
 
     init(container, videoElement, canvasElement) {
@@ -79,6 +81,11 @@ export class SceneManager {
         this.envTexture.magFilter = THREE.LinearFilter;
     }
 
+    getAspectRatio() {
+        // Calculate aspect ratio from canvas (which always contains the video/image)
+        return this.imageCanvas.width / this.imageCanvas.height;
+    }
+
     async loadShadersAndModel() {
         try {
             // Load shader files
@@ -87,7 +94,7 @@ export class SceneManager {
                 fetch('./js/shaders/portal.frag').then(r => r.text())
             ]);
 
-            // Create shader material
+            // Create shader material for reflective model
             this.shaderMaterial = new THREE.ShaderMaterial({
                 vertexShader,
                 fragmentShader,
@@ -96,9 +103,35 @@ export class SceneManager {
                     cameraPosition: { value: this.camera.position },
                     zoom: { value: CONFIG.zoom.default },
                     rotationX: { value: CONFIG.rotation.defaultX },
-                    rotationY: { value: CONFIG.rotation.defaultY }
+                    rotationY: { value: CONFIG.rotation.defaultY },
+                    tinyPlanet: { value: CONFIG.tinyPlanet.default },
+                    directView: { value: false },  // Model uses reflection mode
+                    aspectRatio: { value: this.getAspectRatio() }
                 }
             });
+
+            // Create shader material for background sphere (shares same shaders)
+            this.backgroundMaterial = new THREE.ShaderMaterial({
+                vertexShader,
+                fragmentShader,
+                uniforms: {
+                    envMap: { value: this.envTexture },
+                    cameraPosition: { value: this.camera.position },
+                    zoom: { value: CONFIG.zoom.default },
+                    rotationX: { value: CONFIG.rotation.defaultX },
+                    rotationY: { value: CONFIG.rotation.defaultY },
+                    tinyPlanet: { value: CONFIG.tinyPlanet.default },
+                    directView: { value: true },  // Background always uses direct view
+                    aspectRatio: { value: this.getAspectRatio() }
+                },
+                side: THREE.BackSide  // Render inside of sphere
+            });
+
+            // Create background sphere
+            const sphereGeometry = new THREE.SphereGeometry(50, 60, 40);
+            this.backgroundSphere = new THREE.Mesh(sphereGeometry, this.backgroundMaterial);
+            this.backgroundSphere.visible = false;  // Hidden by default
+            this.scene.add(this.backgroundSphere);
 
             // Load model
             this.loadModel();
@@ -159,11 +192,18 @@ export class SceneManager {
         if (this.shaderMaterial && this.shaderMaterial.uniforms.zoom) {
             this.shaderMaterial.uniforms.zoom.value = zoomValue;
         }
+        if (this.backgroundMaterial && this.backgroundMaterial.uniforms.zoom) {
+            this.backgroundMaterial.uniforms.zoom.value = zoomValue;
+        }
     }
 
     setRotationX(rotationValue) {
         if (this.shaderMaterial && this.shaderMaterial.uniforms.rotationX) {
             this.shaderMaterial.uniforms.rotationX.value = rotationValue;
+        }
+        if (this.backgroundMaterial && this.backgroundMaterial.uniforms.rotationX) {
+            // Invert rotation for background to match reflection behavior
+            this.backgroundMaterial.uniforms.rotationX.value = -rotationValue;
         }
     }
 
@@ -171,6 +211,27 @@ export class SceneManager {
         if (this.shaderMaterial && this.shaderMaterial.uniforms.rotationY) {
             this.shaderMaterial.uniforms.rotationY.value = rotationValue;
         }
+        if (this.backgroundMaterial && this.backgroundMaterial.uniforms.rotationY) {
+            // Invert rotation for background to match reflection behavior
+            this.backgroundMaterial.uniforms.rotationY.value = -rotationValue;
+        }
+    }
+
+    setTinyPlanet(enabled) {
+        if (this.shaderMaterial && this.shaderMaterial.uniforms.tinyPlanet) {
+            this.shaderMaterial.uniforms.tinyPlanet.value = enabled;
+        }
+        if (this.backgroundMaterial && this.backgroundMaterial.uniforms.tinyPlanet) {
+            this.backgroundMaterial.uniforms.tinyPlanet.value = enabled;
+        }
+    }
+
+    setDirectView(enabled) {
+        // Show/hide background sphere (model stays visible)
+        if (this.backgroundSphere) {
+            this.backgroundSphere.visible = enabled;
+        }
+        // Model always stays visible for reflections
     }
 
     onWindowResize() {

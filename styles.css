@@ -106,6 +106,52 @@ canvas {
     width: 200px;
 }
 
+#tinyPlanetControl {
+    right: 1rem;
+    top: 13rem;
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    width: 200px;
+}
+
+#tinyPlanetControl label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+#tinyPlanetToggle {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+#directViewControl {
+    right: 1rem;
+    top: 16rem;
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    width: 200px;
+}
+
+#directViewControl label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+#directViewToggle {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
 .control-container label {
     font-size: 0.875rem; /* text-sm */
 }

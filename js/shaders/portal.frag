@@ -2,10 +2,15 @@ uniform sampler2D envMap;
 uniform float zoom;
 uniform float rotationX;
 uniform float rotationY;
+uniform bool tinyPlanet;
+uniform bool directView;
+uniform float aspectRatio;
 
 varying vec3 vWorldNormal;
 varying vec3 vWorldPosition;
 varying vec3 vViewDirection;
+
+#define PI 3.14159265359
 
 // Rotation matrix around Y axis
 mat3 rotateY(float angle) {
@@ -75,18 +80,70 @@ vec2 cubeToUV(vec3 reflectDir) {
     return uv;
 }
 
+vec2 tinyPlanetToUV(vec3 direction) {
+    // --- 1. Get Polar Coordinates ---
+    // Longitude: angle around the Y axis
+    float angle = atan(direction.z, direction.x);
+
+    // Latitude: angle from top (zenith=0, nadir=PI)
+    float theta = acos(direction.y);
+
+    // --- 2. Map Latitude to Radius ---
+    // Center (0.0) is nadir (looking down), edge (0.5) is zenith (looking up)
+    float radius = (1.0 - (theta / PI)) * 0.5;
+
+    // Apply zoom to radius
+    radius = radius * zoom;
+
+    // --- 3. Convert to Cartesian & Apply Aspect Fix ---
+    float u = radius * cos(angle);
+    float v = radius * sin(angle);
+
+    // Critical aspect ratio correction to prevent stretching
+    u = u / aspectRatio;
+
+    // --- 4. Final UV Lookup ---
+    // Center the coordinates from (-0.5, 0.5) to (0.0, 1.0)
+    vec2 uv = vec2(0.5 + u, 0.5 + v);
+
+    return uv;
+}
+
 void main() {
-    // Calculate reflection vector
-    vec3 normal = normalize(vWorldNormal);
-    vec3 viewDir = normalize(vViewDirection);
-    vec3 reflectDir = reflect(-viewDir, normal);
+    vec2 uv;
 
-    // Apply rotations to the reflection vector (rotate the environment)
-    reflectDir = rotateX(rotationX) * reflectDir;
-    reflectDir = rotateY(rotationY) * reflectDir;
+    if (directView) {
+        // Direct view mode: use view direction instead of reflection
+        vec3 viewDir = normalize(vViewDirection);
+        vec3 direction = viewDir;
 
-    // Convert reflection vector to UV coordinates
-    vec2 uv = cubeToUV(reflectDir);
+        // Apply rotations
+        direction = rotateX(rotationX) * direction;
+        direction = rotateY(rotationY) * direction;
+
+        // Convert to UV based on projection mode
+        if (tinyPlanet) {
+            uv = tinyPlanetToUV(direction);
+        } else {
+            uv = cubeToUV(direction);
+        }
+    } else {
+        // Reflection mode: use reflection vector (original behavior)
+        vec3 normal = normalize(vWorldNormal);
+        vec3 viewDir = normalize(vViewDirection);
+        vec3 reflectDir = reflect(-viewDir, normal);
+
+        // Apply rotations to the reflection vector (rotate the environment)
+        reflectDir = rotateX(rotationX) * reflectDir;
+        reflectDir = rotateY(rotationY) * reflectDir;
+
+        // Convert reflection vector to UV coordinates based on projection mode
+        if (tinyPlanet) {
+            uv = tinyPlanetToUV(reflectDir);
+        } else {
+            uv = cubeToUV(reflectDir);
+        }
+    }
 
     // Sample the texture
     vec4 envColor = texture2D(envMap, uv);

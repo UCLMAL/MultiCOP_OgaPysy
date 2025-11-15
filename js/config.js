@@ -30,5 +30,11 @@ export const CONFIG = {
         defaultX: 0,
         defaultY: 0,
         step: 0.01
+    },
+    tinyPlanet: {
+        default: false
+    },
+    directView: {
+        default: false
     }
 };
