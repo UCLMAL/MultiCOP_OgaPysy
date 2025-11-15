@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.js Canvas Environment Map</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <video
+        id="video"
+        src="https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/WDW_Grafizmo_Final.mp4"
+        playsinline
+        loop
+        muted
+        crossorigin="anonymous"
+        style="display: none;"
+    ></video>
+
+    <canvas id="imageCanvas" width="1024" height="1024" style="display: none;"></canvas>
+
+    <!-- UI elements -->
+    <input type="file" id="imageUpload" accept="image/*">
+    <label for="imageUpload" id="uploadLabel" class="control-button">Upload Image</label>
+
+    <input type="file" id="videoUpload" accept="video/*">
+    <label for="videoUpload" id="uploadVideoLabel" class="control-button">Upload Video</label>
+
+    <button id="videoButton" class="control-button">Use Default Video</button>
+
+    <div id="zoomControl" class="control-container">
+        <label for="zoomSlider">Zoom: <span id="zoomValue">1.00</span>x</label>
+        <input type="range" id="zoomSlider" min="0.5" max="4" value="1" step="0.01">
+    </div>
+
+    <div id="infoOverlay">
+        <button
+            id="startButton"
+            class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-lg text-2xl shadow-lg transition-transform duration-200 hover:scale-105"
+        >
+            Start Experience
+        </button>
+    </div>
+
+    <div id="container"></div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.138.0/build/three.module.js",
+                "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.138.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

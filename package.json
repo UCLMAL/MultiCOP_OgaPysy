@@ -1,0 +1,19 @@
+{
+  "name": "ogapysyportal",
+  "version": "1.0.0",
+  "description": "Three.js environment mapping portal with interactive video and image textures",
+  "type": "module",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "preview": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "threejs",
+    "webgl",
+    "3d",
+    "environment-mapping",
+    "video-texture"
+  ],
+  "author": "",
+  "license": "MIT"
+}
