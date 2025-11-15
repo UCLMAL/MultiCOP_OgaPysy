@@ -11,13 +11,10 @@ export class SceneManager {
         this.controls = null;
         this.video = null;
         this.envTexture = null;
-        this.cubeCamera = null;
-        this.cubeRenderTarget = null;
-        this.scene2 = null;
-        this.videoBox = null;
         this.loadedModel = null;
         this.imageCanvas = null;
         this.animationId = null;
+        this.shaderMaterial = null;
     }
 
     init(container, videoElement, canvasElement) {
@@ -68,11 +65,8 @@ export class SceneManager {
         // Setup texture
         this.setupTexture();
 
-        // Setup environment map
-        this.setupEnvironmentMap();
-
-        // Load model
-        this.loadModel();
+        // Load shaders and model
+        this.loadShadersAndModel();
 
         // Handle window resize
         window.addEventListener('resize', () => this.onWindowResize());
@@ -85,31 +79,32 @@ export class SceneManager {
         this.envTexture.magFilter = THREE.LinearFilter;
     }
 
-    setupEnvironmentMap() {
-        this.cubeRenderTarget = new THREE.WebGLCubeRenderTarget(
-            CONFIG.cubeRenderTargetSize,
-            {
-                format: THREE.RGBAFormat,
-                generateMipmaps: true,
-                minFilter: THREE.LinearMipmapLinearFilter,
-            }
-        );
-        this.cubeRenderTarget.texture.encoding = THREE.sRGBEncoding;
+    async loadShadersAndModel() {
+        try {
+            // Load shader files
+            const [vertexShader, fragmentShader] = await Promise.all([
+                fetch('./js/shaders/portal.vert').then(r => r.text()),
+                fetch('./js/shaders/portal.frag').then(r => r.text())
+            ]);
 
-        this.cubeCamera = new THREE.CubeCamera(0.01, 100, this.cubeRenderTarget);
+            // Create shader material
+            this.shaderMaterial = new THREE.ShaderMaterial({
+                vertexShader,
+                fragmentShader,
+                uniforms: {
+                    envMap: { value: this.envTexture },
+                    cameraPosition: { value: this.camera.position },
+                    zoom: { value: CONFIG.zoom.default },
+                    rotationX: { value: CONFIG.rotation.defaultX },
+                    rotationY: { value: CONFIG.rotation.defaultY }
+                }
+            });
 
-        this.scene2 = new THREE.Scene();
-
-        const videoMaterial = new THREE.MeshBasicMaterial({
-            map: this.envTexture,
-            side: THREE.BackSide
-        });
-
-        this.videoBox = new THREE.Mesh(
-            new THREE.BoxGeometry(1, 1, 1),
-            videoMaterial
-        );
-        this.scene2.add(this.videoBox);
+            // Load model
+            this.loadModel();
+        } catch (error) {
+            console.error('Error loading shaders:', error);
+        }
     }
 
     loadModel() {
@@ -119,12 +114,10 @@ export class SceneManager {
             (gltf) => {
                 this.loadedModel = gltf.scene;
 
+                // Replace all materials with our custom shader material
                 this.loadedModel.traverse((node) => {
-                    if (node.isMesh && node.material) {
-                        node.material.envMap = this.cubeRenderTarget.texture;
-                        node.material.metalness = CONFIG.material.metalness;
-                        node.material.roughness = CONFIG.material.roughness;
-                        node.material.needsUpdate = true;
+                    if (node.isMesh && this.shaderMaterial) {
+                        node.material = this.shaderMaterial;
                     }
                 });
 
@@ -163,12 +156,20 @@ export class SceneManager {
     }
 
     setZoom(zoomValue) {
-        const newScale = 1.0 / zoomValue;
-        if (this.videoBox) {
-            this.videoBox.scale.set(newScale, newScale, newScale);
+        if (this.shaderMaterial && this.shaderMaterial.uniforms.zoom) {
+            this.shaderMaterial.uniforms.zoom.value = zoomValue;
         }
-        if (this.envTexture) {
-            this.envTexture.needsUpdate = true;
+    }
+
+    setRotationX(rotationValue) {
+        if (this.shaderMaterial && this.shaderMaterial.uniforms.rotationX) {
+            this.shaderMaterial.uniforms.rotationX.value = rotationValue;
+        }
+    }
+
+    setRotationY(rotationValue) {
+        if (this.shaderMaterial && this.shaderMaterial.uniforms.rotationY) {
+            this.shaderMaterial.uniforms.rotationY.value = rotationValue;
         }
     }
 
@@ -183,10 +184,6 @@ export class SceneManager {
 
         this.controls.update();
         this.updateVideoTexture();
-
-        if (this.cubeCamera) {
-            this.cubeCamera.update(this.renderer, this.scene2);
-        }
 
         this.renderer.render(this.scene, this.camera);
     }

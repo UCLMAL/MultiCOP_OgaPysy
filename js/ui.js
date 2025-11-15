@@ -18,6 +18,12 @@ export class UIManager {
             zoomControl: document.getElementById('zoomControl'),
             zoomSlider: document.getElementById('zoomSlider'),
             zoomValueSpan: document.getElementById('zoomValue'),
+            rotationXControl: document.getElementById('rotationXControl'),
+            rotationXSlider: document.getElementById('rotationXSlider'),
+            rotationXValueSpan: document.getElementById('rotationXValue'),
+            rotationYControl: document.getElementById('rotationYControl'),
+            rotationYSlider: document.getElementById('rotationYSlider'),
+            rotationYValueSpan: document.getElementById('rotationYValue'),
             video: document.getElementById('video')
         };
 
@@ -39,6 +45,12 @@ export class UIManager {
 
         // Zoom slider
         this.elements.zoomSlider.addEventListener('input', (e) => this.handleZoomChange(e));
+
+        // Rotation X slider
+        this.elements.rotationXSlider.addEventListener('input', (e) => this.handleRotationXChange(e));
+
+        // Rotation Y slider
+        this.elements.rotationYSlider.addEventListener('input', (e) => this.handleRotationYChange(e));
     }
 
     handleStart() {
@@ -59,6 +71,8 @@ export class UIManager {
         this.elements.uploadVideoLabel.style.display = 'block';
         this.elements.videoButton.style.display = 'block';
         this.elements.zoomControl.style.display = 'flex';
+        this.elements.rotationXControl.style.display = 'flex';
+        this.elements.rotationYControl.style.display = 'flex';
     }
 
     handleImageUpload(event) {
@@ -124,6 +138,22 @@ export class UIManager {
         const zoomValue = parseFloat(event.target.value);
         this.sceneManager.setZoom(zoomValue);
         this.elements.zoomValueSpan.textContent = zoomValue.toFixed(2);
+    }
+
+    handleRotationXChange(event) {
+        const rotationValue = parseFloat(event.target.value);
+        this.sceneManager.setRotationX(rotationValue);
+        // Convert radians to degrees for display
+        const degrees = (rotationValue * 180 / Math.PI).toFixed(2);
+        this.elements.rotationXValueSpan.textContent = degrees;
+    }
+
+    handleRotationYChange(event) {
+        const rotationValue = parseFloat(event.target.value);
+        this.sceneManager.setRotationY(rotationValue);
+        // Convert radians to degrees for display
+        const degrees = (rotationValue * 180 / Math.PI).toFixed(2);
+        this.elements.rotationYValueSpan.textContent = degrees;
     }
 
     cleanup() {

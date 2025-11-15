@@ -3,7 +3,6 @@ export const CONFIG = {
     defaultVideoSrc: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/WDW_Grafizmo_Final.mp4',
     modelSrc: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/Oga_Test_2.glb',
     canvasSize: 1024,
-    cubeRenderTargetSize: 1024,
     camera: {
         fov: 60,
         near: 0.1,
@@ -19,14 +18,17 @@ export const CONFIG = {
         physicallyCorrectLights: true,
         toneMappingExposure: 1.0
     },
-    material: {
-        metalness: 1.0,
-        roughness: 0.0
-    },
     zoom: {
         min: 0.5,
         max: 4,
         default: 1,
+        step: 0.01
+    },
+    rotation: {
+        min: -Math.PI,
+        max: Math.PI,
+        defaultX: 0,
+        defaultY: 0,
         step: 0.01
     }
 };
