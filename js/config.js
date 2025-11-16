@@ -66,6 +66,62 @@ export const CONFIG = {
             rotationY: 0,
             projectionMode: 2,  // cubemap
             directView: true
+        },
+        {
+            url: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/MOP-02-002.mp4',
+            zoom: 1.0,
+            rotationX: 0,
+            rotationY: 0,
+            projectionMode: 2,  // cubemap
+            directView: true
+        },
+        {
+            url: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/MOP-02-004.mp4',
+            zoom: 1.0,
+            rotationX: 0,
+            rotationY: 0,
+            projectionMode: 2,  // cubemap
+            directView: true
+        },
+        {
+            url: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/MOP-02-005.mp4',
+            zoom: 1.0,
+            rotationX: 0,
+            rotationY: 0,
+            projectionMode: 2,  // cubemap
+            directView: true
+        },
+        {
+            url: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/MOP-02-009.mp4',
+            zoom: 1.0,
+            rotationX: 0,
+            rotationY: 0,
+            projectionMode: 2,  // cubemap
+            directView: true
+        },
+        {
+            url: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/MOP-03-02.mp4',
+            zoom: 1.0,
+            rotationX: 0,
+            rotationY: 0,
+            projectionMode: 2,  // cubemap
+            directView: true
+        },
+        {
+            url: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/05.mp4',
+            zoom: 1.0,
+            rotationX: 0,
+            rotationY: 0,
+            projectionMode: 2,  // cubemap
+            directView: true
+        },
+        {
+            url: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/fire%20and%20guaxire%20cut_1.mp4',
+            zoom: 1.0,
+            rotationX: 0,
+            rotationY: 0,
+            projectionMode: 2,  // cubemap
+            directView: true
         }
         // Add more videos here as needed
     ],
