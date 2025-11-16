@@ -64,16 +64,10 @@ export class UIManager {
     }
 
     handleStart() {
-        this.elements.video.play()
-            .then(() => {
-                this.elements.infoOverlay.style.display = 'none';
-                this.showControls();
-            })
-            .catch(err => {
-                console.error("Video play failed:", err);
-                this.elements.startButton.textContent = "Error - Could not play video";
-                this.elements.startButton.disabled = true;
-            });
+        // PlaylistManager now handles video playback
+        // Just hide overlay and show controls immediately
+        this.elements.infoOverlay.style.display = 'none';
+        this.showControls();
     }
 
     showControls() {
@@ -176,6 +170,46 @@ export class UIManager {
     handleDirectViewToggle(event) {
         const enabled = event.target.checked;
         this.sceneManager.setDirectView(enabled);
+    }
+
+    // Programmatic UI update methods for playlist manager
+    setUIZoom(value) {
+        this.elements.zoomSlider.value = value;
+        this.elements.zoomValueSpan.textContent = value.toFixed(2);
+        this.sceneManager.setZoom(value);
+    }
+
+    setUIRotationX(value) {
+        this.elements.rotationXSlider.value = value;
+        const degrees = (value * 180 / Math.PI).toFixed(2);
+        this.elements.rotationXValueSpan.textContent = degrees;
+        this.sceneManager.setRotationX(value);
+    }
+
+    setUIRotationY(value) {
+        this.elements.rotationYSlider.value = value;
+        const degrees = (value * 180 / Math.PI).toFixed(2);
+        this.elements.rotationYValueSpan.textContent = degrees;
+        this.sceneManager.setRotationY(value);
+    }
+
+    setUITinyPlanet(enabled) {
+        this.elements.tinyPlanetToggle.checked = enabled;
+        this.sceneManager.setTinyPlanet(enabled);
+    }
+
+    setUIDirectView(enabled) {
+        this.elements.directViewToggle.checked = enabled;
+        this.sceneManager.setDirectView(enabled);
+    }
+
+    // Update all UI controls from config object
+    updateAllUIFromConfig(config) {
+        this.setUIZoom(config.zoom);
+        this.setUIRotationX(config.rotationX);
+        this.setUIRotationY(config.rotationY);
+        this.setUITinyPlanet(config.tinyPlanet);
+        this.setUIDirectView(config.directView);
     }
 
     cleanup() {

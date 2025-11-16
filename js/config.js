@@ -36,5 +36,36 @@ export const CONFIG = {
     },
     directView: {
         default: false
+    },
+    playlist: [
+        {
+            url: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/MOP-01-001.mp4',
+            zoom: 1.0,
+            rotationX: 0,
+            rotationY: 0,
+            tinyPlanet: false,
+            directView: false
+        },
+        {
+            url: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/MOP-01-002.mp4',
+            zoom: 1.0,
+            rotationX: 0,
+            rotationY: 0,
+            tinyPlanet: false,
+            directView: false
+        },
+        {
+            url: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/MOP-01-003.mp4',
+            zoom: 1.0,
+            rotationX: 0,
+            rotationY: 0,
+            tinyPlanet: false,
+            directView: false
+        }
+        // Add more videos here as needed
+    ],
+    playlistSettings: {
+        loop: true,          // Loop playlist when it reaches the end
+        preloadNext: true    // Preload next video for smooth transitions
     }
 };

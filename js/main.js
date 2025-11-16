@@ -1,9 +1,11 @@
 import { SceneManager } from './scene.js';
 import { UIManager } from './ui.js';
+import { PlaylistManager } from './playlist.js';
 
 // Initialize the application
 let sceneManager;
 let uiManager;
+let playlistManager;
 
 // Wait for DOM to be ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -19,10 +21,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Create UI manager
     uiManager = new UIManager(sceneManager);
 
+    // Create playlist manager
+    playlistManager = new PlaylistManager(sceneManager, uiManager, videoElement);
+
     // Setup start button with scene initialization
     startButton.addEventListener('click', () => {
         // Initialize scene
         sceneManager.init(container, videoElement, canvasElement);
+
+        // Initialize playlist (this will start playing first video)
+        playlistManager.init();
 
         // Start animation
         sceneManager.start();
@@ -36,5 +44,8 @@ window.addEventListener('beforeunload', () => {
     }
     if (uiManager) {
         uiManager.cleanup();
+    }
+    if (playlistManager) {
+        playlistManager.cleanup();
     }
 });
