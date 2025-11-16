@@ -31,11 +31,16 @@ export const CONFIG = {
         defaultY: 0,
         step: 0.01
     },
-    tinyPlanet: {
-        default: false
+    projectionMode: {
+        default: 0,  // 0: cubemap, 1: tinyPlanet, 2: equirectangular
+        modes: {
+            cubemap: 0,
+            tinyPlanet: 1,
+            equirectangular: 2
+        }
     },
     directView: {
-        default: false
+        default: true
     },
     playlist: [
         {
@@ -43,24 +48,24 @@ export const CONFIG = {
             zoom: 1.0,
             rotationX: 0,
             rotationY: 0,
-            tinyPlanet: false,
-            directView: false
+            projectionMode: 2,  // cubemap
+            directView: true
         },
         {
             url: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/MOP-01-002.mp4',
             zoom: 1.0,
             rotationX: 0,
             rotationY: 0,
-            tinyPlanet: false,
-            directView: false
+            projectionMode: 2,  // cubemap
+            directView: true
         },
         {
             url: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/MOP-01-003.mp4',
             zoom: 1.0,
             rotationX: 0,
             rotationY: 0,
-            tinyPlanet: false,
-            directView: false
+            projectionMode: 2,  // cubemap
+            directView: true
         }
         // Add more videos here as needed
     ],

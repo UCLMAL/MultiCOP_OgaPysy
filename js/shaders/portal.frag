@@ -2,7 +2,7 @@ uniform sampler2D envMap;
 uniform float zoom;
 uniform float rotationX;
 uniform float rotationY;
-uniform bool tinyPlanet;
+uniform int projectionMode; // 0: cubemap, 1: tinyPlanet, 2: equirectangular
 uniform bool directView;
 uniform float aspectRatio;
 
@@ -109,6 +109,21 @@ vec2 tinyPlanetToUV(vec3 direction) {
     return uv;
 }
 
+vec2 equirectangularToUV(vec3 direction) {
+    // Standard equirectangular (lat/long) projection
+    // Longitude: -PI to PI mapped to 0 to 1
+    float u = atan(direction.z, direction.x) / (2.0 * PI) + 0.5;
+
+    // Latitude: -PI/2 to PI/2 mapped to 0 to 1
+    float v = asin(direction.y) / PI + 0.5;
+
+    // Apply zoom by scaling around center
+    vec2 uv = vec2(u, v);
+    uv = (uv - 0.5) / zoom + 0.5;
+
+    return uv;
+}
+
 void main() {
     vec2 uv;
 
@@ -122,8 +137,10 @@ void main() {
         direction = rotateY(rotationY) * direction;
 
         // Convert to UV based on projection mode
-        if (tinyPlanet) {
+        if (projectionMode == 1) {
             uv = tinyPlanetToUV(direction);
+        } else if (projectionMode == 2) {
+            uv = equirectangularToUV(direction);
         } else {
             uv = cubeToUV(direction);
         }
@@ -138,8 +155,10 @@ void main() {
         reflectDir = rotateY(rotationY) * reflectDir;
 
         // Convert reflection vector to UV coordinates based on projection mode
-        if (tinyPlanet) {
+        if (projectionMode == 1) {
             uv = tinyPlanetToUV(reflectDir);
+        } else if (projectionMode == 2) {
+            uv = equirectangularToUV(reflectDir);
         } else {
             uv = cubeToUV(reflectDir);
         }

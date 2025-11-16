@@ -88,52 +88,61 @@ export class SceneManager {
 
     async loadShadersAndModel() {
         try {
-            // Load shader files
             const [vertexShader, fragmentShader] = await Promise.all([
                 fetch('./js/shaders/portal.vert').then(r => r.text()),
                 fetch('./js/shaders/portal.frag').then(r => r.text())
             ]);
 
-            // Create shader material for reflective model
+            // DEFINE DEFAULT MODE:
+            // 0: Cubemap, 1: TinyPlanet, 2: Equirectangular
+            // Let's assume default is 1 (Tiny Planet) or 2 (Equirectangular) based on your preference
+            const defaultMode = 2; 
+
             this.shaderMaterial = new THREE.ShaderMaterial({
                 vertexShader,
                 fragmentShader,
                 uniforms: {
                     envMap: { value: this.envTexture },
                     cameraPosition: { value: this.camera.position },
-                    zoom: { value: CONFIG.zoom.default },
-                    rotationX: { value: CONFIG.rotation.defaultX },
-                    rotationY: { value: CONFIG.rotation.defaultY },
-                    tinyPlanet: { value: CONFIG.tinyPlanet.default },
-                    directView: { value: false },  // Model uses reflection mode
+                    zoom: { value: CONFIG.zoom ? CONFIG.zoom.default : 1.0 }, // Safety check
+                    rotationX: { value: CONFIG.rotation ? CONFIG.rotation.defaultX : 0.0 },
+                    rotationY: { value: CONFIG.rotation ? CONFIG.rotation.defaultY : 0.0 },
+                    
+                    // --- FIX STARTS HERE ---
+                    // Replaced 'tinyPlanet' with 'projectionMode' to match shader
+                    projectionMode: { value: defaultMode }, 
+                    // --- FIX ENDS HERE ---
+
+                    directView: { value: false },
                     aspectRatio: { value: this.getAspectRatio() }
                 }
             });
 
-            // Create shader material for background sphere (shares same shaders)
             this.backgroundMaterial = new THREE.ShaderMaterial({
                 vertexShader,
                 fragmentShader,
                 uniforms: {
                     envMap: { value: this.envTexture },
                     cameraPosition: { value: this.camera.position },
-                    zoom: { value: CONFIG.zoom.default },
-                    rotationX: { value: CONFIG.rotation.defaultX },
-                    rotationY: { value: CONFIG.rotation.defaultY },
-                    tinyPlanet: { value: CONFIG.tinyPlanet.default },
-                    directView: { value: true },  // Background always uses direct view
+                    zoom: { value: CONFIG.zoom ? CONFIG.zoom.default : 1.0 },
+                    rotationX: { value: CONFIG.rotation ? CONFIG.rotation.defaultX : 0.0 },
+                    rotationY: { value: CONFIG.rotation ? CONFIG.rotation.defaultY : 0.0 },
+                    
+                    // --- FIX STARTS HERE ---
+                    projectionMode: { value: defaultMode },
+                    // --- FIX ENDS HERE ---
+
+                    directView: { value: true },
                     aspectRatio: { value: this.getAspectRatio() }
                 },
-                side: THREE.BackSide  // Render inside of sphere
+                side: THREE.BackSide
             });
 
-            // Create background sphere
             const sphereGeometry = new THREE.SphereGeometry(50, 60, 40);
             this.backgroundSphere = new THREE.Mesh(sphereGeometry, this.backgroundMaterial);
-            this.backgroundSphere.visible = false;  // Hidden by default
+            this.backgroundSphere.visible = false; 
             this.scene.add(this.backgroundSphere);
 
-            // Load model
             this.loadModel();
         } catch (error) {
             console.error('Error loading shaders:', error);
@@ -218,11 +227,16 @@ export class SceneManager {
     }
 
     setTinyPlanet(enabled) {
-        if (this.shaderMaterial && this.shaderMaterial.uniforms.tinyPlanet) {
-            this.shaderMaterial.uniforms.tinyPlanet.value = enabled;
+        // Map boolean to integer mode
+        // If enabled (true) -> Mode 1 (Tiny Planet)
+        // If disabled (false) -> Mode 2 (Equirectangular) - OR Mode 0 (Cubemap) depending on your source
+        const mode = enabled ? 1 : 2; 
+
+        if (this.shaderMaterial && this.shaderMaterial.uniforms.projectionMode) {
+            this.shaderMaterial.uniforms.projectionMode.value = mode;
         }
-        if (this.backgroundMaterial && this.backgroundMaterial.uniforms.tinyPlanet) {
-            this.backgroundMaterial.uniforms.tinyPlanet.value = enabled;
+        if (this.backgroundMaterial && this.backgroundMaterial.uniforms.projectionMode) {
+            this.backgroundMaterial.uniforms.projectionMode.value = mode;
         }
     }
 
