@@ -52,10 +52,7 @@ export class PlaylistManager {
         // Set video source
         this.videoElement.src = videoConfig.url;
 
-        // Apply video configuration to scene
-        this.applyVideoConfig(videoConfig);
-
-        // Update UI to match configuration
+        // Update UI to match configuration (this also applies to scene)
         this.updateUIFromConfig(videoConfig);
 
         // Play video
@@ -104,15 +101,6 @@ export class PlaylistManager {
     handleVideoEnded() {
         console.log('✅ Video ended, advancing to next');
         this.playNext();
-    }
-
-    applyVideoConfig(config) {
-        // Apply all parameters to the scene
-        this.sceneManager.setZoom(config.zoom);
-        this.sceneManager.setRotationX(config.rotationX);
-        this.sceneManager.setRotationY(config.rotationY);
-        this.sceneManager.setTinyPlanet(config.tinyPlanet);
-        this.sceneManager.setDirectView(config.directView);
     }
 
     updateUIFromConfig(config) {
