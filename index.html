@@ -6,6 +6,22 @@
     <title>Three.js Canvas Environment Map</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .control-container {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            margin-bottom: 10px;
+        }
+        /* specific positioning for the existing controls */
+        #zoomControl { position: absolute; top: 20px; right: 20px; }
+        #rotationXControl { position: absolute; top: 70px; right: 20px; }
+        #rotationYControl { position: absolute; top: 120px; right: 20px; }
+        #tinyPlanetControl { position: absolute; top: 170px; right: 20px; }
+        #directViewControl { position: absolute; top: 220px; right: 20px; }
+    </style>
 </head>
 <body>
     <video
@@ -17,7 +33,6 @@
 
     <canvas id="imageCanvas" width="1024" height="1024" style="display: none;"></canvas>
 
-    <!-- UI elements -->
     <div id="zoomControl" class="control-container">
         <label for="zoomSlider">Zoom: <span id="zoomValue">1.00</span>x</label>
         <input type="range" id="zoomSlider" min="0.5" max="4" value="1" step="0.01">
@@ -45,6 +60,26 @@
             <input type="checkbox" id="directViewToggle">
             <span>Direct View (360°)</span>
         </label>
+    </div>
+
+    <div id="playlistControls" class="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 bg-black/70 backdrop-blur-md p-4 rounded-xl border border-white/10 shadow-2xl z-50">
+        
+        <button id="btnPrev" class="p-2 rounded-full hover:bg-white/20 transition-colors text-white group" title="Previous Video">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+        </button>
+
+        <div class="text-center min-w-[100px]">
+            <div class="text-xs text-gray-400 uppercase tracking-wider">Playlist</div>
+            <div id="playlistCounter" class="text-white font-mono font-bold text-lg">1 / 1</div>
+        </div>
+
+        <button id="btnNext" class="p-2 rounded-full hover:bg-white/20 transition-colors text-white" title="Next Video">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+        </button>
     </div>
 
     <div id="infoOverlay">

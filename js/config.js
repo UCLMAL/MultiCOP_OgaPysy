@@ -1,7 +1,7 @@
 // Configuration constants
 export const CONFIG = {
     defaultVideoSrc: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/WDW_Grafizmo_Final.mp4',
-    modelSrc: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/Oga_Test_2.glb',
+    modelSrc: 'https://pub-66a5e419a59846e58e64646d349e80c4.r2.dev/Oga_Test.glb',
     canvasSize: 1024,
     camera: {
         fov: 60,

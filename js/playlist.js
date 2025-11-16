@@ -10,6 +10,9 @@ export class PlaylistManager {
         this.settings = CONFIG.playlistSettings;
         this.preloadElement = null;
         this.isInitialized = false;
+        
+        // UI Elements reference
+        this.counterElement = document.getElementById('playlistCounter');
     }
 
     init() {
@@ -23,11 +26,36 @@ export class PlaylistManager {
             this.createPreloadElement();
         }
 
+        // Bind the HTML buttons
+        this.bindDOMControls();
+
         // Load first video
         this.playVideoAtIndex(0);
 
         this.isInitialized = true;
         console.log('🎬 PlaylistManager initialized with', this.playlist.length, 'videos');
+    }
+
+    /**
+     * Connects the HTML buttons to the class methods
+     */
+    bindDOMControls() {
+        const btnNext = document.getElementById('btnNext');
+        const btnPrev = document.getElementById('btnPrev');
+
+        if (btnNext) {
+            btnNext.addEventListener('click', () => {
+                console.log('User clicked Next');
+                this.playNext();
+            });
+        }
+
+        if (btnPrev) {
+            btnPrev.addEventListener('click', () => {
+                console.log('User clicked Previous');
+                this.playPrevious();
+            });
+        }
     }
 
     createPreloadElement() {
@@ -52,8 +80,11 @@ export class PlaylistManager {
         // Set video source
         this.videoElement.src = videoConfig.url;
 
-        // Update UI to match configuration (this also applies to scene)
+        // Update UI to match configuration
         this.updateUIFromConfig(videoConfig);
+        
+        // Update the playlist counter (e.g. "1 / 5")
+        this.updateCounterDisplay();
 
         // Play video
         this.videoElement.play().catch(err => {
@@ -63,6 +94,15 @@ export class PlaylistManager {
         // Preload next video if enabled
         if (this.settings.preloadNext) {
             this.preloadNextVideo();
+        }
+    }
+
+    updateCounterDisplay() {
+        if (this.counterElement) {
+            const current = this.currentIndex + 1;
+            const total = this.playlist.length;
+            // Updates text to "1 / 5"
+            this.counterElement.textContent = `${current} / ${total}`;
         }
     }
 
@@ -104,7 +144,6 @@ export class PlaylistManager {
     }
 
     updateUIFromConfig(config) {
-        // Update UI controls to match configuration
         if (this.uiManager && this.uiManager.updateAllUIFromConfig) {
             this.uiManager.updateAllUIFromConfig(config);
         }
@@ -116,14 +155,12 @@ export class PlaylistManager {
         const nextIndex = (this.currentIndex + 1) % this.playlist.length;
         const nextVideo = this.playlist[nextIndex];
 
-        // Set source and start loading
         this.preloadElement.src = nextVideo.url;
         this.preloadElement.load();
 
         console.log('⏳ Preloading next video:', nextVideo.url);
     }
 
-    // Public method to get current video info
     getCurrentVideo() {
         return {
             index: this.currentIndex,
